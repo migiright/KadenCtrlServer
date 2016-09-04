@@ -61,5 +61,10 @@ app.use(function(err, req, res, next) {
   });
 });
 
+//
+// コントローラサーバを起動する
+//
+var cServer = require('./controller-server.js');
+cServer.start();
 
 module.exports = app;
