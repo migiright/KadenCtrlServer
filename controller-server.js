@@ -1,0 +1,125 @@
+'use strict'
+
+const events = require('events');
+const assert = require('assert');
+
+const sleep = require('sleep');
+
+const bufferToStr = function(buffer){
+	let s = '';
+	for(let i = 0; i < buffer.length; ++i){
+		s += ('00' + buffer[i].toString(16)).slice(-2) + ' ';
+	}
+	return s;
+}
+
+const eventEmitter = new events.EventEmitter;
+const controllers = {};
+
+const Controller = function(address, socket){
+	this.address = address;
+	this.socket = socket;
+};
+
+//コントローラーに直接データを送る
+//data: Buffer
+Controller.prototype.sendData = function(data){
+	const sb = new Buffer(4);
+	sb.writeUInt32LE(data.length);
+	this.socket.write(sb);
+	this.socket.write(data);
+	console.log('sent %d bytes of data to %s. "%s"', data.length, this.address, data.toString());
+	console.log(bufferToStr(data));
+}
+
+//データを読むジェネレータ データをを最後まで読み終えるとBufferが、まだだとnullが返る
+const getDataCollector = function*(){
+	//サイズとデータを読むのに使う
+	//size: 何バイト読むか
+	let chunk;
+	let readChunk;
+	chunk = yield;
+	readChunk = 0;
+	while(true){
+		let size;
+		{ //サイズ読み込み
+			let read = 0;
+			const buf = new Buffer(4);
+			do {
+				if(readChunk >= chunk.length){
+					assert(readChunk == chunk.length, "readChunk > chunk.length");
+					chunk = yield null;
+					readChunk = 0;
+				}
+				const toRead = chunk.length - readChunk > 4 - read
+					? 4 - read
+					: chunk.length - readChunk;
+				chunk.copy(buf, read, readChunk, readChunk + toRead);
+				read += toRead;
+				readChunk += toRead;
+			} while(read < 4);
+			assert(read == 4, "read > 4");
+			size = buf.readUInt32LE(0);
+		}
+		let data;
+		{ //データ読み込み
+			let read = 0;
+			const buf = new Buffer(size);
+			do {
+				if(readChunk >= chunk.length){
+					assert(readChunk == chunk.length, "readChunk > chunk.length");
+					chunk = yield null;
+					readChunk = 0;
+				}
+				const toRead = chunk.length - readChunk > size - read
+					? size - read
+					: chunk.length - readChunk;
+				chunk.copy(buf, read, readChunk, readChunk + toRead);
+				read += toRead;
+				readChunk += toRead;
+			} while(read < size);
+			assert(read == size, "read > size");
+			yield buf;
+		}
+		
+	}
+};
+
+exports.start = function(){
+	//サーバーを作って起動
+	const server = require('net').createServer(function(soc){
+		const address = soc.remoteAddress;
+		//controllersに新しく接続してきたコントローラーでControllerクラスのインスタンスを作り登録する
+		const controller = new Controller(address, soc);
+		controllers[address] = new Controller(address, soc);
+		
+		console.log('contoroller %s connected.', address);
+		//connectedイベントを発生させてsocket.ioたちに伝える
+		eventEmitter.emit('connected', { controller: controller });
+		
+		//コントローラーのプログラムが終了するかして切断された時に発生
+		soc.on('close', function(){
+			delete controllers[controller.address];
+			console.log('controller %s closed.', address);
+			eventEmitter.emit('closed', { controller: controller });
+		});
+		
+		const dataCollector = getDataCollector();
+		dataCollector.next();
+		soc.on('data', function(chunk){ //コントローラーからデータが送られてきた時に発生
+			let data;
+			while((data = dataCollector.next(chunk).value) !== null){
+				//とりあえずそのまま送る
+				eventEmitter.emit('data', {
+					controller: controller
+					, data: data
+				});
+				console.log('received %d bytes of data from %s: "%s"', data.length, address, data.toString());
+				console.log(bufferToStr(data));
+			}
+		});
+	}).listen(50000);	
+}
+
+exports.eventEmitter = eventEmitter;
+exports.controllers = controllers;
