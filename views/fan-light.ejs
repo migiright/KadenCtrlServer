@@ -1,0 +1,19 @@
+﻿<div id="<%= deviceid %>" data-role="page">
+	<div data-role="header">
+		<a href="#home" data-role="button" data-icon="home" data-iconpos="notext">home</a>
+		<h1>制御ページ</h1>
+	</div>
+	<div data-role="content">
+		<h1><%= devicename %></h1>
+		<!--扇風機/卓上ライトがON/OFFのとき"ON"/"OFF"を表示したい-->
+		<p><%= devicename %>は<%= status %>です</p>
+		<div id='controllers' style='border:solid 1px'></div>
+		<div>
+			<input id='textbox-send' type='text' />
+			<button id='button-send' type='button'>send</button>
+			<!--textboxとsendボタンの代わりにON/OFFボタンを使って制御したい-->
+			<button>ON</button>
+			<button>OFF</button>
+		</div>
+	</div>
+</div>
