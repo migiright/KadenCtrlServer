@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>test</title>
+<link rel='stylesheet' href='/stylesheets/style.css' />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+<!--<script type='text/javascript' src='/jquery/jquery.min.js'></script>-->
+<script type='text/javascript' src='/socket.io/socket.io.js'></script>
+<script type='text/javascript' src='/javascripts/index.js'></script>
+<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+</head>
+<body>
+
+	<!---home--------------------->
+	<div id="home" data-role="page">
+		<div data-role="header">
+			<h1>pi_IoT</h1>
+			</div>
+		<div data-role="content">
+			<!---リストビュー-------->
+			<ul data-role="listview" data-inset="true">
+				<li><a href="#fan" data-transition="slide"><img src="images/li01.png">
+					<h3>扇風機</h3>
+				</a>
+				</li>
+				<li><a href="#light" data-transition="slide"><img src="images/li02.png">
+					<h3>卓上ライト</h3>
+				</a>
+				</li>
+				<li><a href="#remocon" data-transition="slide"><img src="images/li03.png">
+					<h3>赤外線リモコン</h3>
+				</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<!---fan--------------------->
+	<div id="fan" data-role="page">
+		<div data-role="header">
+			<a href="#home" data-role="button" data-icon="home" data-iconpos="notext">home</a>
+			<h1>制御ページ</h1>
+		</div>
+		<div data-role="content">
+			<h1>扇風機</h1>
+			<!--扇風機がON/OFFのとき"ON"/"OFF"を表示したい-->
+			<p>扇風機はON(OFF)です</p>
+			<div id='controllers' style='border:solid 1px'></div>
+			<div>
+				<input id='textbox-send' type='text' />
+				<button id='button-send' type='button'>send</button>
+				<!--textboxとsendボタンの代わりにON/OFFボタンを使って制御したい-->
+				<button>ON</button>
+				<button>OFF</button>
+			</div>
+		</div>
+	</div>
+
+	<!---light--------------------->
+	<div id="light" data-role="page">
+		<div data-role="header">
+			<a href="#home" data-role="button" data-icon="home" data-iconpos="notext">home</a>
+			<h1>制御ページ</h1>
+		</div>
+		<div data-role="content">
+			<h1>卓上ライト</h1>
+			<!--卓上ライトがON/OFFのとき"ON"/"OFF"を表示したい-->
+			<p>卓上ライトはON(OFF)です</p>
+			<div id='controllers' style='border:solid 1px'></div>
+			<div>
+				<input id='textbox-send' type='text' />
+				<button id='button-send' type='button'>send</button>
+				<!--textboxとsendボタンの代わりにON/OFFボタンを使って制御したい-->
+				<button>ON</button>
+				<button>OFF</button>
+			</div>
+		</div>
+	</div>
+	
+	<!---remocon--------------------->
+	<div  id="remocon" data-role="page">
+		<div data-role="header">
+			<a href="#home" data-role="button" data-icon="home" data-iconpos="notext">home</a>
+			<h1>制御ページ</h1>
+		</div>
+		<div role="main" class="ui-content">
+			<div data-role="tabs">
+				<div data-role="navbar" data-iconpos="left">         				
+					<ul>
+						<li><a href="#tvonoff" class="ui-btn-active">電源</a></li>
+						<li><a href="#tvch">番組</a></li>
+					</ul>
+				</div>
+				
+				<div id="tvonoff">
+					<h1>TVの電源</h1>
+					<!--TVがON/OFFのとき"ON"/"OFF"を表示したい-->
+					<p>TVはON/OFFです</p>
+					<div id='controllers' style='border:solid 1px'></div>
+					<div>
+						<input id='textbox-send' type='text' />
+						<button id='button-send' type='button'>send</button>
+						<!--textboxとsendボタンの代わりにON/OFFボタンを使って制御したい-->
+						<button>ON</button>
+						<button>OFF</button>
+					</div>
+				</div>
+					<!--以下TVの番組を変えたい場合-->
+				<div id="tvch">
+					<h1>TVの番組</h1>
+					<!--現在のTVが表示している番組を?に表示したい-->
+					<p>TVは?chです</p>
+					<div id='controllers' style='border:solid 1px'></div>
+					<div>
+						<!--
+						<input id='textbox-send' type='text' />
+						<button id='button-send' type='button'>send</button>-->
+						<!--textboxとsendボタンの代わりに+/-ボタン(あるいはTVリモコンのような数字ボタン)を使って制御したい-->
+						<!--
+						<button>+</button>
+						<button>-</button>
+						-->
+						<!--TVリモコン的なもの-->
+						<table border="0" align="center">
+							<tr>
+								<!--<td width="60"><input id='tvpower' type="image" src="images/power.png" width="60" height="30"></td>-->
+								<!--<td width="60"><button class="ui-btn-c"></button></td>-->
+								<td width="60"><input id='tvpower' type="button" value="P"></td>
+								<td width="60"></td>
+								<td width="60"></td>
+							</tr>
+							<tr>
+								<td width="60"><input id='ch1' type="button" value="1"></td>
+								<td width="60"><input id='ch2' type="button" value="2"></td> 
+								<td width="60"><input id='ch3' type="button" value="3"></td>
+							</tr>
+							<tr>
+								<td width="60"><input id='ch4' type="button" value="4"></td>
+								<td width="60"><input id='ch5' type="button" value="5"></td> 
+								<td width="60"><input id='ch6' type="button" value="6"></td>
+							</tr>
+							<tr>
+								<td width="60"><input id='ch7' type="button" value="7"></td>
+								<td width="60"><input id='ch8' type="button" value="8"></td> 
+								<td width="60"><input id='ch9' type="button" value="9"></td>
+							</tr>
+							<tr>
+								<td width="60"><input id='ch10' type="button" value="10"></td>
+								<td width="60"><input id='ch11' type="button" value="11"></td> 
+								<td width="60"><input id='ch12' type="button" value="12"></td>
+							</tr>						
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<div id='log'></div>
+</body>
+</html>
