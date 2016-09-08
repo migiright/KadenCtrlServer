@@ -55,7 +55,11 @@ const Controller = function(address, socket){
 			
 			//メッセージで処理を振り分け
 			console.log('message:' + data[0]);
-			Controller._dataProcessors[data[0]].call(self, data);
+			if(Controller._dataProcessors[data[0]]){
+				Controller._dataProcessors[data[0]].call(self, data);
+			} else {
+				console.log('unknown message');
+			}
 		}
 	});
 	//-コントローラーの初期化
