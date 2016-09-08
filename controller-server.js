@@ -81,6 +81,10 @@ Controller._dataProcessors = {
 		const type = readString(data, read);
 		const imageId = data.readUInt32LE(read[0]);
 		
+		this.name = name;
+		this.type = type;
+		this.imageId = imageId;
+		
 		eventEmitter.emit('info', {
 			controller: this
 			, name: name
