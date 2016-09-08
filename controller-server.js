@@ -19,6 +19,30 @@ const controllers = {};
 const Controller = function(address, socket){
 	this.address = address;
 	this.socket = socket;
+	
+	//+コントローラーの初期化
+	//コントローラーのプログラムが終了するかして切断された時に発生
+	soc.on('close', function(){
+		delete controllers[controller.address];
+		console.log('controller %s closed.', address);
+		eventEmitter.emit('closed', { controller: controller });
+	});
+	
+	const dataCollector = getDataCollector();
+	dataCollector.next();
+	soc.on('data', function(chunk){ //コントローラーからデータが送られてきた時に発生
+		let data;
+		while((data = dataCollector.next(chunk).value) !== null){
+			//とりあえずそのまま送る
+			eventEmitter.emit('data', {
+				controller: controller
+				, data: data
+			});
+			console.log('received %d bytes of data from %s: "%s"', data.length, address, data.toString());
+			console.log(bufferToStr(data));
+		}
+	});
+	//-コントローラーの初期化
 };
 
 //コントローラーに直接データを送る
@@ -96,28 +120,6 @@ exports.start = function(){
 		console.log('contoroller %s connected.', address);
 		//connectedイベントを発生させてsocket.ioたちに伝える
 		eventEmitter.emit('connected', { controller: controller });
-		
-		//コントローラーのプログラムが終了するかして切断された時に発生
-		soc.on('close', function(){
-			delete controllers[controller.address];
-			console.log('controller %s closed.', address);
-			eventEmitter.emit('closed', { controller: controller });
-		});
-		
-		const dataCollector = getDataCollector();
-		dataCollector.next();
-		soc.on('data', function(chunk){ //コントローラーからデータが送られてきた時に発生
-			let data;
-			while((data = dataCollector.next(chunk).value) !== null){
-				//とりあえずそのまま送る
-				eventEmitter.emit('data', {
-					controller: controller
-					, data: data
-				});
-				console.log('received %d bytes of data from %s: "%s"', data.length, address, data.toString());
-				console.log(bufferToStr(data));
-			}
-		});
 	}).listen(50000);	
 }
 
