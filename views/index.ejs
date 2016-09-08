@@ -1,20 +1,35 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script type='text/javascript' src='/jquery/jquery.min.js'></script>
-    <script type='text/javascript' src='/socket.io/socket.io.js'></script>
-    <script type='text/javascript' src='/javascripts/index.js'></script>
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-    <div id='controllers' style='border:solid 1px'></div>
-    <div>
-      <input id='textbox-send' type='text' />
-      <button id='button-send' type='button'>send</button>
-    </div>
-    <div id='log'></div>
-  </body>
+<html lang="ja">
+<head>
+<title>test</title>
+<link rel='stylesheet' href='/stylesheets/style.css' />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+<script src="http://code.jquery.com/jquery-1.11.3.js"></script>
+<script type='text/javascript' src='/socket.io/socket.io.js'></script>
+<script type='text/javascript' src='/javascripts/index.js'></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script>
+(function($) {
+  $('#list').listview('refresh');
+})(jQuery);
+</script>
+</head>
+<body>
+	<div id="home" data-role="page">
+		<div data-role="header">
+			<h1>pi_IoT</h1>
+		</div>
+		<div data-role="content">
+			<ul data-role="listview" data-inset="true" id="list">
+				<%- list01 %>
+				<%- list02 %>
+				<%- list03 %>
+			</ul>
+		</div>
+	</div>
+	<%- fan %>
+	<%- light %>
+	<%- remocon %>
+</body>
 </html>
