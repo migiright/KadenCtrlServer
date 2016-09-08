@@ -1,4 +1,4 @@
-﻿//httpモジュールをロード
+//httpモジュールをロード
 var http = require('http');
 var fs =require('fs');
 //ejsオブジェクトの取得
@@ -24,6 +24,16 @@ console.log('Server running!');
 //第１引数は、「request」オブジェクト:クライアントからのリクエストに関する機能
 //第２引数は「response」オブジェクト:サーバーからクライアントへ戻されるレスポンスに関する機能
 function doRequest(req, res) {
+	//画像の読み込み
+	/*
+        fs.readFile('./li01.png',
+            function (err, img) {
+                res.writeHead(200, {'Content-Type': 'image/png'});
+                res.write(img, function(err) { res.end(); });
+                res.end();
+            }
+        );
+        */
 	//★２．content.ejsのレンダリング
 	var fanpage = ejs.render(fanlight,{
 		deviceid:"fan",
@@ -40,17 +50,17 @@ function doRequest(req, res) {
 	});
 	var listdata01 = ejs.render(list,{
 		deviceid:"fan",
-		icon:"images/li01.png",
+		icon:"./li01.png",
 		listname:"扇風機"
 	});
 	var listdata02 = ejs.render(list,{
 		deviceid:"light",
-		icon:"images/li02.png",
+		icon:"/viewsimages/li02.png",
 		listname:"卓上ライト"
 	});
 	var listdata03 = ejs.render(list,{
 		deviceid:"remocon",
-		icon:"images/li03.png",
+		icon:"/viewsimages/li03.png",
 		listname:"赤外線リモコン"
 	});
 	
