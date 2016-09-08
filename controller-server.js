@@ -91,7 +91,7 @@ exports.start = function(){
 		const address = soc.remoteAddress;
 		//controllersに新しく接続してきたコントローラーでControllerクラスのインスタンスを作り登録する
 		const controller = new Controller(address, soc);
-		controllers[address] = new Controller(address, soc);
+		controllers[address] = controller;
 		
 		console.log('contoroller %s connected.', address);
 		//connectedイベントを発生させてsocket.ioたちに伝える
