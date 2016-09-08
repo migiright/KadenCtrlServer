@@ -13,33 +13,50 @@ const bufferToStr = function(buffer){
 	return s;
 }
 
+//Bufferから文字数を文字列を読み取る
+//refStartは配列で0番目の要素の場所から読みとる
+//読み取ったバイト数だけ増やした数が0番目の要素に入る
+const readString = function(buffer, refStart){
+	const start = refStart[0];
+	const l = buffer.readUInt32LE(start);
+	refStart[0] = start + 4 + l;
+	return buffer.toString('utf8', start+4, refStart[0]);
+}
+
 const eventEmitter = new events.EventEmitter;
 const controllers = {};
 
 const Controller = function(address, socket){
 	this.address = address;
 	this.socket = socket;
-	
+
 	//+コントローラーの初期化
+	const self = this; //socket.onの中でthisが変わってしまうので
+
 	//コントローラーのプログラムが終了するかして切断された時に発生
-	soc.on('close', function(){
-		delete controllers[controller.address];
+	socket.on('close', function(){
+		delete controllers[self.address];
 		console.log('controller %s closed.', address);
-		eventEmitter.emit('closed', { controller: controller });
+		eventEmitter.emit('closed', { controller: self });
 	});
 	
 	const dataCollector = getDataCollector();
 	dataCollector.next();
-	soc.on('data', function(chunk){ //コントローラーからデータが送られてきた時に発生
+	socket.on('data', function(chunk){ //コントローラーからデータが送られてきた時に発生
 		let data;
 		while((data = dataCollector.next(chunk).value) !== null){
 			//とりあえずそのまま送る
 			eventEmitter.emit('data', {
-				controller: controller
+				controller: self
 				, data: data
 			});
 			console.log('received %d bytes of data from %s: "%s"', data.length, address, data.toString());
 			console.log(bufferToStr(data));
+			
+			//メッセージで処理を振り分け
+			console.log('message:' + data[0]);
+			console.log('this:' + self.address);
+			Controller._dataProcessors[data[0]].call(self, data);
 		}
 	});
 	//-コントローラーの初期化
@@ -56,6 +73,26 @@ Controller.prototype.sendData = function(data){
 	console.log(bufferToStr(data));
 }
 
+//コントローラーからのメッセージごとの処理
+Controller._dataProcessors = {
+	[0]: function(data){ //info(name, type, imageId)
+		const read = [1];
+		const name = readString(data, read);
+		const type = readString(data, read);
+		const imageId = data.readUInt32LE(read[0]);
+		
+		eventEmitter.emit('info', {
+			controller: this
+			, name: name
+			, type: type
+			, imageId: imageId
+		});
+		
+		console.log('received info from %s: name:%s, type:%s, imageId:%s'
+			, this.address, name, type, imageId);
+	}
+}
+	
 //データを読むジェネレータ データをを最後まで読み終えるとBufferが、まだだとnullが返る
 const getDataCollector = function*(){
 	//サイズとデータを読むのに使う

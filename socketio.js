@@ -30,16 +30,31 @@ exports.start = function(io){
 			});
 		});
 		
+		//Infoを伝える
+		cServer.eventEmitter.on('info', function(e){
+			socket.emit('info', {
+				address: e.controller.address
+				, name: e.name
+				, type: e.type
+				, imageId: e.imageId
+			});
+		});
+		
 		//とりあえずコントローラーにデータを素通り
 		socket.on('data', function(e){
+			console.log('gewgwe' + e.address);
 			cServer.controllers[e.address].sendData(e.data);
 		});
 		
 		//ブラウザにコントローラーのリストを送る
 		const cs = [];
 		for(let k in cServer.controllers){
+			const c = cServer.controllers[k];
 			cs.push({
-				address:cServer.controllers[k].address
+				address: c.address
+				, name: c.name
+				, type: c.type
+				, imageId: c.imageId
 			});
 		}
 		socket.emit('controllers', cs);

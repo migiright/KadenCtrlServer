@@ -8,9 +8,12 @@ $(document).ready(function(){
 		controllers[controller.address] = controller;
 		$('#controllers').append(
 			$('<div />', {'class': 'controller'})
-				.text(controller.address)
 				.attr('data-address', controller.address)
 				.attr('data-selected', Object.keys(controllers).length == 1)
+				.html('<div>' + 'address: ' + controller.address + '</div>'
+					+ '<div>' + 'name: ' + controller.name + '</div>'
+					+ '<div>' + 'type: ' + controller.type + '</div>'
+					+ '<div>' + 'imageId: ' + controller.imageId + '</div>')
 		);
 		$('#log').prepend('<li>controller ' + controller.address + ' added</li>');
 	}
@@ -63,6 +66,9 @@ $(document).ready(function(){
 		for(let i = 0; i < e.length; ++i){
 			addController({
 				address: e[i].address
+				, name: e[i].name
+				, type: e[i].type
+				, imageId: e[i].imageId
 			});
 		}
 		$('#log').prepend('<li>received controllers.</li>');
@@ -70,9 +76,16 @@ $(document).ready(function(){
 	
 	soc.on('connected', function(e){
 		$('#log').prepend('<li>' + e.address + ': connected.</li>');
+	});
+	//info:コントローラーに関する情報を受け取った
+	soc.on('info', function(e){
+		$('#log').prepend('<li>' + e.address + ': received info.</li>');
 		controllers[e.address] = {
 			address: e.address
-		}
+			, name: e.name
+			, type: e.type
+			, imageId: e.imageId
+		};
 		addController(controllers[e.address]);
 	});
 	soc.on('closed', function(e){
