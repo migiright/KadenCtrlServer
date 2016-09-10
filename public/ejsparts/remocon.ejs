@@ -1,0 +1,41 @@
+<div  id="<%= deviceid %>" data-role="page">
+	<div data-role="header">
+		<a href="#home" data-role="button" data-icon="home" data-iconpos="notext">home</a>
+		<h1>制御ページ</h1>
+	</div>
+	<div role="main" class="ui-content">
+		<h1><%= devicename %></h1>
+		<!--現在のTVが表示している番組を?に表示したい-->
+		<p>TVは<span class="ch"></span>chです</p>
+		<div style="border:solid 1px"></div>
+		<!--TVリモコン的なもの-->
+		<table border="0" align="center">
+			<tr>
+				<td width="60"><input id="tvpower" type="button" value="P"></td>
+				<td width="60"><a href="#" id="a" data-icon="arrow-u"></a></td>
+				<td width="60"><input id="b" type="button" value="-"></td>
+				<td width="60"><input id="b" type="button" value="-"></td>
+			</tr>
+			<tr>
+				<td width="60"><input id="ch1" type="button" value="1"></td>
+				<td width="60"><input id="ch2" type="button" value="2"></td> 
+				<td width="60"><input id="ch3" type="button" value="3"></td>
+			</tr>
+			<tr>
+				<td width="60"><input id="ch4" type="button" value="4"></td>
+				<td width="60"><input id="ch5" type="button" value="5"></td> 
+				<td width="60"><input id="ch6" type="button" value="6"></td>
+			</tr>
+			<tr>
+				<td width="60"><input id="ch7" type="button" value="7"></td>
+				<td width="60"><input id="ch8" type="button" value="8"></td> 
+				<td width="60"><input id="ch9" type="button" value="9"></td>
+			</tr>
+			<tr>	
+				<td width="60"><input id="ch10" type="button" value="10"></td>
+				<td width="60"><input id="ch11" type="button" value="11"></td> 
+				<td width="60"><input id="ch12" type="button" value="12"></td>
+			</tr>						
+		</table>
+	</div>
+</div>
