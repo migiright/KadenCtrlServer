@@ -23,9 +23,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //
-//jQuery
+//クライアントで使うライブラリ
 //
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
+app.use('/ejs/ejs.min.js', express.static(__dirname + '/node_modules/ejs/ejs.min.js'));
+app.use('/jquery-mobile' , express.static(__dirname + '/jquery.mobile-1.4.2/'));
 
 app.use('/', routes);
 app.use('/users', users);
