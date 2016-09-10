@@ -5,15 +5,11 @@
 	</div>
 	<div data-role="content">
 		<h1><%= devicename %></h1>
-		<!--扇風機/卓上ライトがON/OFFのとき"ON"/"OFF"を表示したい-->
-		<p><%= devicename %>は<%= status %>です</p>
-		<div id='controllers' style='border:solid 1px'></div>
+		<p><%= devicename %>は<span class="status"></span>です</p>
+		<div style="border:solid 1px"></div>
 		<div>
-			<input id='textbox-send' type='text' />
-			<button id='button-send' type='button'>send</button>
-			<!--textboxとsendボタンの代わりにON/OFFボタンを使って制御したい-->
-			<button>ON</button>
-			<button>OFF</button>
+			<button class="on">ON</button>
+			<button class="off">OFF</button>
 		</div>
 	</div>
 </div>

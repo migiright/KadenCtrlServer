@@ -1,35 +1,29 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-<title>test</title>
-<link rel='stylesheet' href='/stylesheets/style.css' />
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
-<script src="http://code.jquery.com/jquery-1.11.3.js"></script>
-<script type='text/javascript' src='/socket.io/socket.io.js'></script>
-<script type='text/javascript' src='/javascripts/index.js'></script>
-<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-<script>
+	<head>
+		<title>test</title>
+		<script src="/jquery/jquery.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+		<link rel="stylesheet" href="/jquery-mobile/jquery.mobile-1.4.2.min.css" />
+		<script src="/jquery-mobile/jquery.mobile-1.4.2.min.js"></script>
+		<script src="/ejs/ejs.min.js"></script>
+		<script src="/javascripts/index.js"></script>
+		<script>
 (function($) {
-  $('#list').listview('refresh');
+  $("#list").listview("refresh");
 })(jQuery);
-</script>
-</head>
-<body>
-	<div id="home" data-role="page">
-		<div data-role="header">
-			<h1>pi_IoT</h1>
+		</script>
+	</head>
+	<body>
+		<div id="home" data-role="page">
+			<div data-role="header">
+				<h1>pi_IoT</h1>
+			</div>
+			<div data-role="content">
+				<ul data-role="listview" data-inset="true" id="list">
+				</ul>
+			</div>
 		</div>
-		<div data-role="content">
-			<ul data-role="listview" data-inset="true" id="list">
-				<%- list01 %>
-				<%- list02 %>
-				<%- list03 %>
-			</ul>
-		</div>
-	</div>
-	<%- fan %>
-	<%- light %>
-	<%- remocon %>
-</body>
+	</body>
 </html>
