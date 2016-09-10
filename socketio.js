@@ -51,7 +51,6 @@ exports.start = function(io){
 		
 		//とりあえずコントローラーにデータを素通り
 		socket.on('data', function(e){
-			console.log('gewgwe' + e.address);
 			cServer.controllers[e.address].sendData(e.data);
 		});
 		

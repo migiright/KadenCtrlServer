@@ -142,7 +142,7 @@ $(document).ready(function(){
 		//コントローラーが切断された
 		soc.on('closed', function(e){
 			removeController(e.address);
-			console.log('' + e.address + ': closed.');
+			console.log(e.address + ': closed.');
 		});
 		
 		//コントローラーが各タイプ独自のメッセージを送ってきた
