@@ -40,10 +40,24 @@ exports.start = function(io){
 			});
 		});
 		
+		//コントローラー独自のメッセージを伝える
+		cServer.eventEmitter.on('local', function(e){
+			socket.emit('local', {
+				address: e.controller.address
+				, message: e.message
+				, data: e.data
+			});
+		});
+		
 		//とりあえずコントローラーにデータを素通り
 		socket.on('data', function(e){
 			console.log('gewgwe' + e.address);
 			cServer.controllers[e.address].sendData(e.data);
+		});
+		
+		//ブラウザからのコントローラー独自のメッセージをcServerで処理
+		socket.on('local', function(e){
+			cServer.controllers[e.address].sendLocal(e.message, e.data);
 		});
 		
 		//ブラウザにコントローラーのリストを送る

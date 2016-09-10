@@ -66,12 +66,12 @@ $(document).ready(function(){
 				page.find('.status').text('OFF');
 				page.find('.on').click(function(){
 					//スイッチをonするローカルメッセージ
-					sendBytes(controller, [0, 1]);
+					soc.emit('local', {address: controller.address, message: 'on'}); 
 					page.find('.status').text('ON');
 				});
 				page.find('.off').click(function(){
 					//スイッチをoffするローカルメッセージ
-					sendBytes(controller, [0, 0]);
+					soc.emit('local', {address: controller.address, message: 'off'});
 					page.find('.status').text('OFF');
 				});
 				break;
@@ -145,19 +145,30 @@ $(document).ready(function(){
 			console.log('' + e.address + ': closed.');
 		});
 		
-		//コントローラーがデータを送ってきた
-		soc.on('data', function(e){
-			//データを文字列にする
-			let s = '';
-			const a = new Uint8Array(e.data);
-			for(let i = 0; i < a.length; ++i){
-				s += ('00' + a[i].toString(16)).slice(-2) + ' ';
+		//コントローラーが各タイプ独自のメッセージを送ってきた
+		soc.on('local', function(e){
+			console.log(e.address + ': received local message');
+			switch(controllers[e.address].type){
+			case 'switcher':
+				switch(e.message){
+				case 'on':
+				case 'off':
+					//スイッチの表示を切り替える
+					$('[id="c' + e.address  + '"] .status').text(e.message.toUpperCase());
+					console.log('message: ' + e.message);
+					break;
+				default:
+					console.log('unknown message: ' + e.message);
+				}
+				break;
+			case 'remocon':
+			case 'nofunc':
+				console.log('unknown message: ' + e.message);
+				break;
+			default:
+				console.log('unknown type: ' + controllers[e.address].type);
+				break;
 			}
-			const decoder = new TextDecoder();
-			const str = decoder.decode(a);
-			
-			console.log(e.address + ': received data "' + str + '"');
-			console.log(s);
 		});
 		
 		// ---コントローラーからのメッセージを処理---

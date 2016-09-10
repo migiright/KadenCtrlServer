@@ -45,16 +45,11 @@ const Controller = function(address, socket){
 	socket.on('data', function(chunk){ //コントローラーからデータが送られてきた時に発生
 		let data;
 		while((data = dataCollector.next(chunk).value) !== null){
-			//とりあえずそのまま送る
-			eventEmitter.emit('data', {
-				controller: self
-				, data: data
-			});
 			console.log('received %d bytes of data from %s: "%s"', data.length, address, data.toString());
 			console.log(bufferToStr(data));
 			
 			//メッセージで処理を振り分け
-			console.log('message:' + data[0]);
+			console.log('message:%d %s', data[0], Controller._messageString[data[0]]);
 			if(Controller._dataProcessors[data[0]]){
 				Controller._dataProcessors[data[0]].call(self, data);
 			} else {
@@ -64,6 +59,8 @@ const Controller = function(address, socket){
 	});
 	//-コントローラーの初期化
 };
+
+// +++Controllerのメソッドとstaticメンバ+++
 
 //コントローラーに直接データを送る
 //data: Buffer
@@ -75,6 +72,11 @@ Controller.prototype.sendData = function(data){
 	console.log('sent %d bytes of data to %s. "%s"', data.length, this.address, data.toString());
 	console.log(bufferToStr(data));
 }
+
+//コントローラーからのメッセージと文字列の対応
+Controller._messageString = [
+	'info', 'local'
+];
 
 //コントローラーからのメッセージごとの処理
 Controller._dataProcessors = {
@@ -98,7 +100,58 @@ Controller._dataProcessors = {
 		console.log('received info from %s: name:%s, type:%s, imageId:%s'
 			, this.address, name, type, imageId);
 	}
+	, [1]: function(data){ //local(各コントローラ独自のメッセージ)
+		switch(this.type){
+		case 'switcher':
+			if(data[1] == 0 || data[1] == 1){ //スイッチのonoff
+				const m = data[1] == 1 ? 'on' : 'off';
+				eventEmitter.emit('local', {controller: this, message: m});
+				console.log('switcher message: %s', m);
+			} else {
+				console.log('unknown switcher message');
+			}
+			break;
+		case 'remocon':
+			console.log('unknown remocon message');
+			break;
+		case 'nofunc':
+			console.log('unknown nofunc message');
+			break;
+		default:
+			console.log('unknown type received message');
+		}
+	}
 }
+
+//ブラウザからのメッセージを変換してコントローラーに送る
+Controller.prototype.sendLocal = function(message, data){
+	switch(this.type){
+	case 'switcher':
+		switch(message){
+		case 'on':
+		case 'off':
+			const buf = new Buffer(2);
+			buf[0] = 0; //独自のメッセージであることを示す
+			buf[1] = message == 'on' ? 1 : 0;
+			this.sendData(buf);
+			break;
+		default:
+			console.log('tried to send unknown message: %s', message);
+		}
+		break;
+	case 'remocon':
+		console.log('tried to send message to remocon');
+		break;
+	case 'nofunc':
+		console.log('tried to send message to nofunc');
+		break;
+	default:
+		console.log('tried to send message to unknown type');
+	}
+}
+
+// ---Controllerのメソッド---
+
 	
 //データを読むジェネレータ データをを最後まで読み終えるとBufferが、まだだとnullが返る
 const getDataCollector = function*(){
