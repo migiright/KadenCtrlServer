@@ -130,17 +130,35 @@ Controller.prototype.sendLocal = function(message, data){
 		switch(message){
 		case 'on':
 		case 'off':
-			const buf = new Buffer(2);
-			buf[0] = 0; //独自のメッセージであることを示す
-			buf[1] = message == 'on' ? 1 : 0;
-			this.sendData(buf);
-			break;
+			{
+				const buf = new Buffer(2);
+				buf[0] = 0; //独自のメッセージであることを示す
+				buf[1] = message == 'on' ? 1 : 0;
+				this.sendData(buf);
+				break;
+			}
 		default:
 			console.log('tried to send unknown message: %s', message);
 		}
 		break;
 	case 'remocon':
-		console.log('tried to send message to remocon');
+		switch(message){
+		case 'send':
+			{
+				const len = encodeURIComponent(data.file).replace(/%../g,"x").length;
+				const buf = new Buffer(7 + len);
+				buf[0] = 0; //独自のメッセージであることを示す
+				buf[1] = 0; //sendを表す
+				buf[2] = data.repeat; //繰り返し回数
+				buf.writeUInt32LE(len, 3);
+				buf.write(data.file, 7, 'utf8');
+				this.sendData(buf);
+				console.log('sent %s %d', data.file, len);
+				break;
+			}
+		default:
+			console.log('tried to send message to remocon');
+		}
 		break;
 	case 'nofunc':
 		console.log('tried to send message to nofunc');

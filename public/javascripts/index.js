@@ -76,6 +76,24 @@ $(document).ready(function(){
 				});
 				break;
 			case 'remocon':
+				page.find('.button').click(function(e){
+					if($(this).attr('data-file')){ //ファイル名がノードに書いてあるか
+						const r = typeof $(this).attr('data-repeat') !== 'undefined' //繰り返し回数
+							? $(this).attr('data-repeat') : 3;
+						//信号を送るローカルメッセージ
+						soc.emit('local', {
+							address: controller.address
+							, message: 'send'
+							, data: {
+								file: $(this).attr('data-file')
+								, repeat: r
+							}
+						});
+						console.log('sent ' + $(this).attr('data-file') + ' ' + r + ' times.');
+					} else {
+						console.log('file not specified');
+					}
+				});
 				break;
 			case 'nofunc':
 				break;
